@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>JS4</title>
     <style>
         ul li{
             list-style: none;
@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-<input id="val">
+<input id="val" type="text">
 <button id="leftEnter">左侧入</button>
 <button id="rightEnter">右侧入</button>
 <button id="leftOut">左侧出</button>
@@ -50,11 +50,15 @@
         if(list.length === 0){
             return
         }
+        let listFirstText = list[0].innerText;
+        let listLastText = list[list.length-1].innerText;
         if(this.id === 'leftOut'){
-            con.removeChild(list[0])
+            con.removeChild(list[0]);
+            alert(listFirstText)
         }
         else {
-            con.removeChild(list[list.length-1])
+            con.removeChild(list[list.length-1]);
+            alert(listLastText)
         }
     }
     function del() {

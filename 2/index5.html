@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS5</title>
+    <style>
+        ul{
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+        ul li{
+            list-style: none;
+            padding: 10px;
+            background: #eb2002;
+            display: inline-block;
+            color: #fff;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<input id="val" type="text">
+<button id="leftEnter">左侧入</button>
+<button id="rightEnter">右侧入</button>
+<button id="leftOut">左侧出</button>
+<button id="rightOut">右侧出</button>
+<ul id="con">
+</ul>
+<ul id="con2">
+
+</ul>
+<script>
+(function () {
+    let con = document.getElementById('con');
+    let list = con.getElementsByTagName('li');
+    document.getElementById('leftEnter').onclick = addEle;
+    document.getElementById('rightEnter').onclick = addEle;
+    document.getElementById('leftOut').onclick = delEle;
+    document.getElementById('rightOut').onclick = delEle;
+    con.onclick = del;
+    //插入元素
+    function addEle() {
+        let val = document.getElementById('val').value,
+            li = document.createElement('li'),
+            node = document.createTextNode(val);
+        //检测输入的值
+        if(!val){
+            alert("不能为空");
+            return
+        }
+        else if(val<10 || val>100){
+            alert("必须输入10-100之间的数字");
+            return
+        }
+        //检测插入的元素是否超过60个
+        if(list.length > 59){
+            alert("不能大于60个");
+            return
+        }
+        //给li元素插入输入框的值
+        li.appendChild(node);
+        li.setAttribute('style','height:'+ val*10 +'px');
+        //判断是左插入还是右插入
+        if( list && this.id === 'leftEnter' ){
+
+            con.insertBefore(li, con.childNodes[0]);
+        }
+        else{
+            con.appendChild(li);
+        }
+        showSort();
+    }
+    //删除元素
+    function delEle() {
+        if(list.length === 0){
+            return
+        }
+        let listFirstText = list[0].innerText;
+        let listLastText = list[list.length-1].innerText;
+        if(this.id === 'leftOut'){
+            con.removeChild(list[0]);
+            alert(listFirstText)
+        }
+        else {
+            con.removeChild(list[list.length-1]);
+            alert(listLastText)
+        }
+    }
+    //插入元素上点击删除本身
+    function del() {
+        if(event.target && event.target.nodeName === "LI") {
+            con.removeChild( event.target )
+        }
+
+    }
+    //列表排序
+    function showSort() {
+        let newList = [];
+        for (let i = 0;i < list.length;i++){
+            newList.push(list[i].innerText)
+        }
+        sort(newList);
+        console.log(newList);
+        con2.innerHTML = '';
+        for(let i = 0;i < newList.length;i++){
+            let con2 = document.getElementById('con2'),
+                li = document.createElement('li'),
+                node = document.createTextNode(newList[i]);
+            li.appendChild(node);
+            li.setAttribute('style','height:'+ newList[i]*10 +'px');
+            con2.appendChild(li);
+        }
+    }
+    //排序方法
+    function sort(arr) {
+        for(let i = 0;i<arr.length;i++){
+            for (let j = 0;j<arr.length;j++){
+                if(arr[i] > arr[j]){
+                    [arr[i],arr[j]] = [arr[j],arr[i]]
+                }
+            }
+        }
+        return arr
+    }
+}());
+
+
+</script>
+</body>
+</html>
