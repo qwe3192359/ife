@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JS6</title>
+    <style>
+        ul li{
+            list-style: none;
+            padding: 10px;
+            background: #eb2002;
+            display: inline-block;
+            color: #fff;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<textarea id="val" ></textarea>
+<button id="leftEnter">左侧入</button>
+<button id="rightEnter">右侧入</button>
+<button id="leftOut">左侧出</button>
+<button id="rightOut">右侧出</button>
+<ul id="con">
+</ul>
+<script>
+(function () {
+    let con = document.getElementById('con');
+    document.getElementById('leftEnter').onclick = addEle;
+    document.getElementById('rightEnter').onclick = addEle;
+    document.getElementById('leftOut').onclick = delEle;
+    document.getElementById('rightOut').onclick = delEle;
+    con.onclick = del;
+    function addEle() {
+        let val = document.getElementById('val').value,
+            li = document.createElement('li');
+
+        let node = document.createTextNode(val);
+        if(!val){
+            return
+        }
+        val = val.replace(/[^0-9a-zA-Z]/g, ' ');
+        let arr = val.split(' ');
+        for(let i = 0;i<arr.length;i++){
+
+        }
+
+        li.appendChild(node);
+        if( con.getElementsByTagName('li') && this.id === 'leftEnter' ){
+            con.insertBefore(li, con.childNodes[0])
+        }
+        else{
+            con.appendChild(li);
+        }
+    }
+    function delEle() {
+        let list = con.getElementsByTagName('li');
+        if(list.length === 0){
+            return
+        }
+        let listFirstText = list[0].innerText;
+        let listLastText = list[list.length-1].innerText;
+        if(this.id === 'leftOut'){
+            con.removeChild(list[0]);
+            alert(listFirstText)
+        }
+        else {
+            con.removeChild(list[list.length-1]);
+            alert(listLastText)
+        }
+    }
+    function del() {
+        if(event.target && event.target.nodeName === "LI") {
+            con.removeChild( event.target )
+        }
+
+    }
+
+}())
+
+
+</script>
+</body>
+</html>

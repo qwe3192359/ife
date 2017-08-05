@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div{
+            border: 1px solid #000;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-grow: 1;
+        }
+        div div + div{
+            margin-left: 20px;
+        }
+        button{
+            margin-top: 20px;
+        }
+        .mt20{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div >
+    <div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="m20">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="m20">
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+<div class="mt20">
+    <div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+        <div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+<button id="btn1" type="button">遍历1</button>
+</body>
+<script>
+(function () {
+    document.getElementById('btn1').onclick = function () {
+        let list = document.getElementsByTagName('div');
+        let i = 0;
+        changeColor();
+        function changeColor(){
+            setTimeout(function () {
+                console.log(i);
+
+                if(i>list.length) {
+                    return
+                }
+                else{
+                    if(i>0){
+                        console.log(i);
+                        list[i-1].style = 'background:#fff';
+                    }
+
+                    list[i].style = 'background:#eb2002';
+                    i++;
+                    changeColor()
+                }
+
+            },2000)
+        }
+    }
+}());
+    function isType(val) {
+        if(typeof val === 'number'){
+            if( val === val ){
+                return 'number'
+            }
+            else{
+                //也可以使用isFinite()来判断一个值是否是数字，NaN和Infinity以及其他非数字都为false
+                //NaN是唯一一个不全等于自己的值NaN === NaN结果是false
+                return 'NaN'
+            }
+        }
+        else if( typeof val === 'string'){
+            return 'string'
+        }
+        else if( typeof val === 'boolean' ){
+            return 'boolean'
+        }
+        else if( typeof val === 'function' ){
+            return 'function'
+        }
+        else if( typeof val === 'undefined' ){
+            return 'undefined'
+        }
+        else if( typeof val === 'object' ){
+            if(val){
+                //可以用 val && typeof val === 'object'来判断是否是对象
+                return 'object'
+            }
+            else{
+                //typeof null是object，但是null是假值
+                return 'null'
+            }
+
+        }
+        else{
+            return '没有值'
+        }
+    }
+</script>
+</html>
