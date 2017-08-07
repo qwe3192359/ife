@@ -4,136 +4,140 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        div{
+        div {
             border: 1px solid #000;
             padding: 20px;
             display: flex;
             justify-content: space-around;
             flex-grow: 1;
         }
-        div div + div{
+
+        div div + div {
             margin-left: 20px;
         }
-        button{
+
+        button {
             margin-top: 20px;
         }
-        .mt20{
+
+        .mt20 {
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
-<div >
+<header id="wrap">
     <div>
         <div>
-            <div></div>
-            <div></div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="m20">
+                <div></div>
+                <div></div>
+            </div>
         </div>
         <div class="m20">
-            <div></div>
-            <div></div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
     </div>
-    <div class="m20">
+    <div class="mt20">
         <div>
-            <div></div>
-            <div></div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
         <div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-</div>
-<div class="mt20">
-    <div>
-        <div>
-            <div></div>
-            <div></div>
-        </div>
-        <div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-    <div>
-        <div>
-            <div></div>
-            <div></div>
-        </div>
-        <div>
-            <div></div>
-            <div></div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
     </div>
-</div>
-<button id="btn1" type="button">遍历1</button>
+</header>
+
+<button id="btn1" type="button">前序遍历1（根左右）</button>
+<button id="btn2" type="button">中序遍历2（左根右）</button>
+<button id="btn3" type="button">后续遍历3（左右根）</button>
 </body>
 <script>
-(function () {
-    document.getElementById('btn1').onclick = function () {
-        let list = document.getElementsByTagName('div');
-        let i = 0;
-        changeColor();
-        function changeColor(){
-            setTimeout(function () {
-                console.log(i);
+    (function () {
+        let wrap = document.getElementById('wrap');
+        let arr = [];
+        document.getElementById('btn1').onclick = function () {
+            preorderTraversal(wrap);
+            changeColor(arr);
+        };
+        document.getElementById('btn2').onclick = function () {
+            infixorderTraversal(wrap);
+            changeColor(arr);
+        };
+        document.getElementById('btn3').onclick = function () {
+            postorderTraversal(wrap);
+            changeColor(arr);
+        };
+        //前序遍历
+        function preorderTraversal(node) {
+            if (node) {
+                arr.push(node);
+                preorderTraversal(node.firstElementChild);
+                preorderTraversal(node.lastElementChild);
+            }
 
-                if(i>list.length) {
+        }
+        //中序遍历
+        function infixorderTraversal(node) {
+            if (node) {
+                infixorderTraversal(node.firstElementChild);
+                arr.push(node);
+                infixorderTraversal(node.lastElementChild);
+            }
+        }
+        //后序遍历
+        function postorderTraversal(node) {
+            if (node) {
+                postorderTraversal(node.firstElementChild);
+                postorderTraversal(node.lastElementChild);
+                arr.push(node);
+            }
+        }
+        //循环显示遍历到的元素
+        function changeColor(list,i=0) {
+            setTimeout(function () {
+                if (i > list.length) {
                     return
                 }
-                else{
-                    if(i>0){
-                        console.log(i);
-                        list[i-1].style = 'background:#fff';
+                else {
+                    if (i > 0) {
+                        list[i - 1].style = 'background:#fff';
                     }
-
-                    list[i].style = 'background:#eb2002';
+                    if (i === list.length - 1){
+                        return
+                    }
+                    list[i].style.background = '#eb2002';
                     i++;
-                    changeColor()
+                    changeColor(arr,i)
                 }
+            }, 1000)
+        }
+    }());
 
-            },2000)
-        }
-    }
-}());
-    function isType(val) {
-        if(typeof val === 'number'){
-            if( val === val ){
-                return 'number'
-            }
-            else{
-                //也可以使用isFinite()来判断一个值是否是数字，NaN和Infinity以及其他非数字都为false
-                //NaN是唯一一个不全等于自己的值NaN === NaN结果是false
-                return 'NaN'
-            }
-        }
-        else if( typeof val === 'string'){
-            return 'string'
-        }
-        else if( typeof val === 'boolean' ){
-            return 'boolean'
-        }
-        else if( typeof val === 'function' ){
-            return 'function'
-        }
-        else if( typeof val === 'undefined' ){
-            return 'undefined'
-        }
-        else if( typeof val === 'object' ){
-            if(val){
-                //可以用 val && typeof val === 'object'来判断是否是对象
-                return 'object'
-            }
-            else{
-                //typeof null是object，但是null是假值
-                return 'null'
-            }
-
-        }
-        else{
-            return '没有值'
-        }
-    }
 </script>
 </html>
