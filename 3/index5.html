@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>任务五：听指令的小方块（二）</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .wrap {
+            padding: 50px;
+            position: relative;
+            margin: 50px;
+        }
+
+        .box {
+            position: absolute;
+            display: flex;
+            align-items: center;
+        }
+
+        .box1 {
+            top: 0;
+            width: 500px;
+            height: 50px;
+        }
+
+        .box2 {
+            width: 50px;
+            height: 500px;
+            left: 0;
+            top: 50px;
+            flex-direction: column;
+        }
+
+        .box div {
+            flex-grow: 1;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .move-box {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background: linear-gradient(blue 30%, red 30%);
+        }
+
+        table {
+            width: 500px;
+            height: 500px;
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #eee;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="box box1">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div>
+    </div>
+    <div class="box box2">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div>
+    </div>
+    <div id="box" class="move-box" style="transform:rotate(90deg);left: 150px;top: 150px;"></div>
+    <table>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <button type="button" id="left">左转</button>
+    <button type="button" id="right">右转</button>
+    <button type="button" id="overturn">翻转</button>
+    <button type="button" id="move">向前移动</button>
+    <button type="button" id="leftMove">向左移动</button>
+    <button type="button" id="rightMove">向右移动</button>
+    <button type="button" id="topMove">向上移动</button>
+    <button type="button" id="bottomMove">向下移动</button>
+
+
+</div>
+
+<script>
+    let box = document.getElementById('box');
+
+    document.getElementById('right').onclick = function () {
+        let rotateVal = Number(box.style.transform.match(/[0-9]+/)[0]);
+        rotate(rotateVal, rotateVal + 90)
+    };
+
+    document.getElementById('left').onclick = function () {
+        let rotateVal = Number(box.style.transform.match(/[0-9]+/)[0]);
+        rotate(rotateVal, rotateVal - 90)
+    };
+    document.getElementById('overturn').onclick = function () {
+        let rotateVal = Number(box.style.transform.match(/[0-9]+/)[0]);
+        rotate(rotateVal, rotateVal + 180)
+    };
+    document.getElementById('move').onclick = move;
+    document.getElementById('leftMove').onclick = move;
+    document.getElementById('rightMove').onclick = move;
+    document.getElementById('topMove').onclick = move;
+    document.getElementById('bottomMove').onclick = move;
+
+    function move() {
+        let rotateVal = Number(box.style.transform.match(/[0-9]+/)[0]);
+        let leftVal = Number(box.style.left.match(/[0-9]+/)[0]);
+        let topVal = Number(box.style.top.match(/[0-9]+/)[0]);
+        console.log(rotateVal, leftVal, topVal);
+        if (this.id === 'move') {
+            if (rotateVal === 0 && topVal > 50) {
+                box.style.top = topVal - 50 + 'px'
+            }
+            else if (rotateVal === 90 && leftVal < 500) {
+                box.style.left = leftVal + 50 + 'px';
+            }
+            else if (rotateVal === 180 && topVal < 500) {
+                box.style.top = topVal + 50 + 'px'
+            }
+            else if (rotateVal === 270 && leftVal > 50) {
+                box.style.left = leftVal - 50 + 'px'
+            }
+        }
+        else if (this.id === 'leftMove' && leftVal > 50) {
+            box.style.left = leftVal - 50 + 'px'
+        }
+        else if (this.id === 'rightMove' && leftVal < 500) {
+            box.style.left = leftVal + 50 + 'px';
+        }
+        else if (this.id === 'topMove' && topVal > 50) {
+            box.style.top = topVal - 50 + 'px'
+        }
+        else if (this.id === 'bottomMove' && topVal < 500) {
+            box.style.top = topVal + 50 + 'px'
+        }
+
+
+    }
+    function rotate(start, end) {
+        setTimeout(function () {
+            if(start>end){
+                start--;
+            }
+            else{
+                start++;
+            }
+
+            box.style.transform = 'rotate(' + start + 'deg)';
+            if (start === end) {
+                if(end>=360){
+                    end -= 360;
+                    box.style.transform = 'rotate(' + end + 'deg)';
+                }
+                if(end<=0){
+                    end += 360;
+                    box.style.transform = 'rotate(' + end + 'deg)';
+                }
+                return
+            }
+            rotate(start, end)
+        }, 13)
+    }
+</script>
+</body>
+</html>
