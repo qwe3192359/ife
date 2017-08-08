@@ -20,6 +20,8 @@
 <button id="rightEnter">右侧入</button>
 <button id="leftOut">左侧出</button>
 <button id="rightOut">右侧出</button>
+<input type="text" id="text">
+<button id="query"></button>
 <ul id="con">
 </ul>
 <script>
@@ -31,25 +33,22 @@
     document.getElementById('rightOut').onclick = delEle;
     con.onclick = del;
     function addEle() {
-        let val = document.getElementById('val').value,
-            li = document.createElement('li');
-
-        let node = document.createTextNode(val);
+        let val = document.getElementById('val').value;
         if(!val){
             return
         }
-        val = val.replace(/[^0-9a-zA-Z]/g, ' ');
-        let arr = val.split(' ');
+        let arr = val.split(/\W+/);
         for(let i = 0;i<arr.length;i++){
-
-        }
-
-        li.appendChild(node);
-        if( con.getElementsByTagName('li') && this.id === 'leftEnter' ){
-            con.insertBefore(li, con.childNodes[0])
-        }
-        else{
-            con.appendChild(li);
+            if(arr[i]){
+                let li = document.createElement('li');
+                li.innerText = arr[i];
+                if( con.getElementsByTagName('li') && this.id === 'leftEnter' ){
+                    con.insertBefore(li, con.childNodes[0])
+                }
+                else{
+                    con.appendChild(li);
+                }
+            }
         }
     }
     function delEle() {

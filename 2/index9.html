@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>task9</title>
     <style>
         div {
             border: 1px solid #000;
@@ -76,11 +76,36 @@
 <button id="btn1" type="button">前序遍历1（根左右）</button>
 <button id="btn2" type="button">中序遍历2（左根右）</button>
 <button id="btn3" type="button">后续遍历3（左右根）</button>
+<button id="del" type="button">删除</button>
+<input id="text" type="text" >
+<button id="add" type="button">新增</button>
 </body>
 <script>
     (function () {
         let wrap = document.getElementById('wrap');
         let arr = [];
+        wrap.onclick = function (e) {
+            e.target.style.background = '#eb2002';
+            e.target.className += ' ' +  'del';
+        };
+        //删除节点
+        document.getElementById('del').onclick = function () {
+            let list = wrap.getElementsByClassName('del');
+            for (let i = 0;i<list.length;i++){
+                list[i].parentNode.removeChild(list[i]);
+            }
+        };
+        //新增节点
+        document.getElementById('add').onclick = function () {
+            let list = wrap.getElementsByClassName('del');
+            let text = document.getElementById('text').value;
+            for (let i = 0;i<list.length;i++){
+                let div = document.createElement('div');
+                div.innerText = text;
+                list[i].append(div);
+
+            }
+        };
         document.getElementById('btn1').onclick = function () {
             preorderTraversal(wrap);
             changeColor(arr);

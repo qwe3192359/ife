@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            border: 1px solid #000;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-grow: 1;
+            color: #000;
+        }
+
+        div div + div {
+            margin-left: 20px;
+        }
+
+        button {
+            margin-top: 20px;
+        }
+
+        .mt20 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<header id="wrap">
+    <div>1
+        <div>2
+            <div>3
+                <div>4</div>
+                <div>5</div>
+                <div>6</div>
+                <div>7</div>
+            </div>
+        </div>
+        <div>8
+
+        </div>
+        <div>9
+            <div>10
+                <div>11</div>
+                <div>12</div>
+                <div>13</div>
+            </div>
+        </div>
+    </div>
+    <div class="mt20">14
+        <div>15
+            <div>16
+                <div>17</div>
+                <div>18</div>
+                <div>19</div>
+            </div>
+        </div>
+        <div>20
+            <div>21
+                <div>22</div>
+                <div>23</div>
+                <div>24</div>
+            </div>
+            <div>25
+                <div>26
+                    <div>27</div>
+                </div>
+                <div>28</div>
+            </div>
+        </div>
+        <div>29
+
+        </div>
+    </div>
+</header>
+
+<button id="btn1" type="button">前序遍历1（根子）</button>
+<button id="btn2" type="button">后续遍历2（子根）</button>
+<input id="queryText" type="text">
+<button id="btn3" type="button">查询</button>
+</body>
+<script>
+    (function () {
+        let wrap = document.getElementById('wrap');
+        let arr = [];
+        let noQuert = true;
+        document.getElementById('btn1').onclick = function () {
+            arr = [];
+            preorderTraversal(wrap);
+            changeColor(arr);
+        };
+        document.getElementById('btn2').onclick = function () {
+            arr = [];
+            postorderTraversal(wrap);
+            changeColor(arr);
+        };
+        document.getElementById('btn3').onclick = function () {
+            arr = [];
+            let queryText = document.getElementById('queryText').value;
+            preorderTraversal(wrap);
+            changeColor(arr, 0,queryText);
+        };
+        //前序遍历，根子
+        function preorderTraversal(node) {
+            if (node) {
+                arr.push(node);
+                if(node.childElementCount > 0){
+                    for(let i = 0;i<node.childElementCount;i++){
+                        preorderTraversal(node.children[i])
+                    }
+                }
+            }
+        }
+        //后序遍历，子根
+        function postorderTraversal(node) {
+            if (node) {
+                if(node.childElementCount > 0){
+                    for(let i = 0;i<node.childElementCount;i++){
+                        postorderTraversal(node.children[i])
+                    }
+                }
+                arr.push(node);
+            }
+        }
+        //循环显示遍历到的元素
+        function changeColor(list,i=0,queryText) {
+            setTimeout(function () {
+                if (i > list.length) {
+                    return
+                }
+                else {
+                    if (i > 0) {
+                        list[i - 1].style.background = '#fff';
+                    }
+                    if(queryText &&  list[i].firstChild.nodeValue.indexOf(queryText) > -1){
+                        noQuert = false;
+                        list[i].style.color = '#eb2002';
+                    }
+                    if (i === list.length - 1){
+                        if(queryText && noQuert){
+                            alert('没有找到')
+                        }
+                        return
+                    }
+                    list[i].style.background = '#eb2002';
+                    i++;
+                    changeColor(arr,i,queryText)
+                }
+            }, 500)
+        }
+    }());
+
+</script>
+</html>
