@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>德克塞斯扑克</title>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        #con {
+
+        }
+
+        .board {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100px;
+            text-align: center;
+            padding: 50px 0;
+            font-size: 22px;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+
+        #control {
+            padding: 20px 100px;
+        }
+
+        #control button {
+            background: #eb2002;
+            color: #fff;
+            border: 0;
+            padding: 10px 30px;
+            outline: none;
+        }
+
+        .board-list {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            padding: 0 20px 20px 0;
+            border: 1px solid #eee;
+            width: 640px;
+            height: 180px;
+            margin-left: 100px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<!--公共牌区-->
+<div id="con" class="board-list">
+
+</div>
+<!--玩家牌区-->
+<div id="players">
+    <!--<div class="board-list">-->
+    <!--<div>玩家1</div>-->
+
+    <!--</div>-->
+</div>
+
+<!--控制区-->
+<div id="control">
+    <button id="btn">发牌</button>
+    <button id="btn2">计算结果</button>
+    <button id="btn3">重新开始</button>
+</div>
+
+<script>
+    //取随机数
+    // Math.floor(Math.random() * ( 51 + 1));
+
+
+    // 储存所有的牌
+    let boardArr = shuffle();
+    //玩家的数据
+    let players = [];
+    //公共牌
+    let commonBoard = [];
+    //发牌的个数
+    let order = 0;
+    //初始化
+    //playersCon();
+    //发牌
+    document.getElementById('btn').onclick = deal;
+    //计算结果
+    document.getElementById('btn2').onclick = comparisonBoard;
+    //重新开始
+    document.getElementById('btn3').onclick = playersCon;
+    //初始化
+    playersCon();
+    function playersCon(e,num) {
+        //玩家人数，默认为2
+        num = num || 2;
+        //洗牌
+        boardArr = [1,1,1,3,4,4,4,4,4,9,10,11,12,13,14] || shuffle();
+        //公共牌
+        commonBoard = [];
+        //初始化玩家列表
+        players.splice(0,players.length);
+        players.length = num;
+        for(let i =0;i<num;i++){
+            players[i] = new CreatePlayer()
+        }
+        order = 0;
+        //清空页面公共牌、玩家牌dom
+        document.getElementById('con').innerHTML = '';
+        document.getElementById('players').innerHTML = '';
+        //页面添加玩家dom
+        for (let i = 0; i < num; i++) {
+            let div = document.createElement('div');
+            div.className = 'board-list';
+            div.innerText = '玩家' + i;
+            document.getElementById('players').append(div);
+        }
+    }
+
+    //创建玩家对象
+    function CreatePlayer() {
+        this.name = 1;
+        this.myBoardList = [];
+        this.myAllBoardList = [];
+        this.maxBoardList = [];
+        this.surplusBoardList = [];
+        this.level = null;
+    }
+
+    //洗牌
+    function shuffle() {
+        let boardList = [];
+        for (let i = 0; i < 52; i++) {
+            boardList.push(i)
+        }
+        boardList.sort(function () {
+            return 0.5 - Math.random()
+        });
+        return boardList
+    }
+
+
+    console.log(boardArr);
+    //返回新的随机牌
+    function newBoard(val) {
+        let board = {};
+        if (val < 15) {
+            board.num = changeJQK(val);
+            board.initialNum = val;
+            board.suit = '♠';
+            board.suitValue = 1;
+            board.color = '#000';
+            return board
+        }
+        else if (val < 28) {
+            board.num = changeJQK(val - 13);
+            board.initialNum = val - 13;
+            board.suit = '♥';
+            board.suitValue = 2;
+            board.color = '#eb2002';
+            return board
+        }
+        else if (val < 41) {
+            board.num = changeJQK(val - 26);
+            board.initialNum = val - 26;
+            board.suit = '♣';
+            board.suitValue = 1;
+            board.color = '#000';
+            return board
+        }
+        else {
+            board.num = changeJQK(val - 39);
+            board.initialNum = val - 39;
+            board.suit = '◆';
+            board.suitValue = 4;
+            board.color = '#eb2002';
+            return board
+        }
+    }
+    //把1、11、12、13改为A、J、Q、K
+    function changeJQK(num) {
+        if (num === 14) {
+            return 'A'
+        }
+        else if (num === 11) {
+            return 'J'
+        }
+        else if (num === 12) {
+            return 'Q'
+        }
+        else if (num === 13) {
+            return 'K'
+        }
+        else {
+            return num
+        }
+    }
+
+
+    //发牌
+    function deal() {
+
+        let board = newBoard(boardArr[order] + 2);
+        let div = document.createElement('div');
+        div.innerHTML = '<div>' + board.num + '</div><div style="color:' + board.color + '">' + board.suit + '</div>';
+        div.className = 'board';
+
+        if (order < players.length) {
+            document.getElementById('players').children[order].append(div);
+            players[order].myBoardList.push(board);
+        }
+        else if (order < players.length * 2) {
+            document.getElementById('players').children[order - players.length].append(div);
+            players[order - players.length].myBoardList.push(board);
+        }
+        else if (order < players.length * 2 + 5) {
+            document.getElementById('con').append(div);
+            commonBoard.push(board);
+        }
+        else {
+            alert('发牌完毕')
+        }
+        order++
+    }
+    //挑出最大的牌型
+    function comparisonBoard() {
+        //玩家的牌与公共牌组合
+        for (let i = 0; i < players.length; i++) {
+            players[i].myAllBoardList = players[i].myBoardList.concat(commonBoard);
+            isFlush(players[i].myAllBoardList,players[i]);
+            //ifFourKind(players[i].myAllBoardList,players[i]);
+
+
+        }
+    }
+    //是否是同花
+    function isFlush(boardList,player) {
+        let list = boardList.slice();
+        let suits = [];
+        let arr = [];
+        //将牌按照花色排序
+        list.sort(function (a,b) {
+            return b.suitValue - a.suitValue
+        });
+        //单独取出花色并添加到plays数组中
+        for (let x in list) {
+            suits.push(list[x].suitValue)
+        }
+        //找出相同花色的数量
+        for (let i = 0; i < suits.length;) {
+            console.log(i);
+            let count = 0;
+            for (let j = i; j < suits.length; j++) {
+                console.log(j);
+                if (suits[i] === suits[j]) {
+                    count++;
+                }
+            }
+            arr.push({
+                date: suits[i],
+                count: count
+            });
+            i += count;
+        }
+
+        for (let k = 0; k < arr.length; k++) {
+            console.log(k);
+            //是同花
+            if(arr[k].count > 4){
+                for(let i =0;i<list.length;i++){
+                    console.log(i);
+                    if(list[i].suitValue !== arr[k].date){
+
+                        list.splice(i,1);
+                        i--
+                    }
+                }
+                let isStraightResult = isStraight(list,player);
+                if( isStraightResult ){
+                    console.log('同花顺');
+                    return true
+                }
+                else{
+                    //按照数字大小排序
+                    list.sort(function(a,b){
+                        return b.initialNum - a.initialNum
+                    });
+                    console.log('同花');
+                    player.level = '同花';
+                    player.maxBoardList = list.slice(0,5);
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    //是否是顺子
+    function isStraight(boardList,player){
+        let list = boardList.slice();
+        //按照数字大小排序
+        list.sort(function(a,b){
+            return b.initialNum - a.initialNum
+        });
+
+        //去重
+        for(let i = 0;i<list.length - 1;i++){
+            console.log(i);
+
+            if(list[i].initialNum === list[i+1].initialNum){
+                list[i].splice(i+1,1);
+                i--
+            }
+        }
+        //可能是顺子的列表
+        let num = list.length - 5;
+        //不够五张的不是顺子
+        if(num < 0){
+            console.log('不是顺子');
+            return false
+        }
+        else{
+            for(let i =0;i<num+1;i++){
+                console.log(i);
+                if(list[i].initialNum - list[i+4].initialNum === 4){
+                    //返回最大的顺子
+                    console.log(list.slice(i,i+5));
+                    console.log('顺子');
+                    player.level = '顺子';
+                    player.maxBoardList = list.slice(i,i+5);
+                    return true
+                }
+
+                if(list[0].initialNum === 14 && list[list.length - 4].initialNum === 4){
+                    //特殊顺子1,2,3,4,5
+                    list.splice(1,num);
+                    console.log('12345顺子');
+                    player.level = '12345顺子';
+                    player.maxBoardList = list;
+                    return true
+                }
+
+            }
+        }
+    }
+    //是否是四条
+    function ifFourKind(boardList,player) {
+        let list = boardList.slice();
+        let arr = [];
+        //按照数字大小排序
+        list.sort(function(a,b){
+            return b.initialNum - a.initialNum
+        });
+        //找出相同花色的数量
+        for (let i = 0; i < list.length;) {
+            let count = 0;
+            for (let j = i; j < list.length; j++) {
+                if (list[i].initialNum === list[j].initialNum) {
+                    count++;
+                }
+            }
+            arr.push({
+                date: list[i],
+                count: count
+            });
+            i += count;
+        }
+        console.log(arr)
+    }
+
+
+</script>
+</body>
+</html>
