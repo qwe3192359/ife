@@ -69,8 +69,6 @@
 </div>
 
 <script>
-    //取随机数
-    // Math.floor(Math.random() * ( 51 + 1));
 
 
     // 储存所有的牌
@@ -91,17 +89,17 @@
     document.getElementById('btn3').onclick = playersCon;
     //初始化
     playersCon();
-    function playersCon(e,num) {
+    function playersCon(e, num) {
         //玩家人数，默认为2
         num = num || 2;
         //洗牌
-        boardArr = [1,1,1,3,4,4,4,4,4,9,10,11,12,13,14] || shuffle();
+        boardArr = [3, 9, 3, 3, 4, 4, 4, 5, 5, 9, 10, 11, 12, 13, 14] || shuffle();
         //公共牌
         commonBoard = [];
         //初始化玩家列表
-        players.splice(0,players.length);
+        players.splice(0, players.length);
         players.length = num;
-        for(let i =0;i<num;i++){
+        for (let i = 0; i < num; i++) {
             players[i] = new CreatePlayer()
         }
         order = 0;
@@ -227,19 +225,25 @@
         //玩家的牌与公共牌组合
         for (let i = 0; i < players.length; i++) {
             players[i].myAllBoardList = players[i].myBoardList.concat(commonBoard);
-            isFlush(players[i].myAllBoardList,players[i]);
-            //ifFourKind(players[i].myAllBoardList,players[i]);
+            //按照大小排序
+            players[i].myAllBoardList.sort(function (a, b) {
+                return b.initialNum - a.initialNum
+            });
+            console.log('玩家' + i);
+            isFlush(players[i].myAllBoardList, players[i]);
+            ifFourKind(players[i].myAllBoardList, players[i]);
+            ifFullhouse(players[i].myAllBoardList, players[i]);
 
 
         }
     }
     //是否是同花
-    function isFlush(boardList,player) {
+    function isFlush(boardList, player) {
         let list = boardList.slice();
         let suits = [];
         let arr = [];
         //将牌按照花色排序
-        list.sort(function (a,b) {
+        list.sort(function (a, b) {
             return b.suitValue - a.suitValue
         });
         //单独取出花色并添加到plays数组中
@@ -248,10 +252,8 @@
         }
         //找出相同花色的数量
         for (let i = 0; i < suits.length;) {
-            console.log(i);
             let count = 0;
             for (let j = i; j < suits.length; j++) {
-                console.log(j);
                 if (suits[i] === suits[j]) {
                     count++;
                 }
@@ -264,30 +266,28 @@
         }
 
         for (let k = 0; k < arr.length; k++) {
-            console.log(k);
             //是同花
-            if(arr[k].count > 4){
-                for(let i =0;i<list.length;i++){
-                    console.log(i);
-                    if(list[i].suitValue !== arr[k].date){
+            if (arr[k].count > 4) {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].suitValue !== arr[k].date) {
 
-                        list.splice(i,1);
+                        list.splice(i, 1);
                         i--
                     }
                 }
-                let isStraightResult = isStraight(list,player);
-                if( isStraightResult ){
+                let isStraightResult = isStraight(list, player);
+                if (isStraightResult) {
                     console.log('同花顺');
                     return true
                 }
-                else{
+                else {
                     //按照数字大小排序
-                    list.sort(function(a,b){
+                    list.sort(function (a, b) {
                         return b.initialNum - a.initialNum
                     });
                     console.log('同花');
                     player.level = '同花';
-                    player.maxBoardList = list.slice(0,5);
+                    player.maxBoardList = list.slice(0, 5);
                     return true
                 }
             }
@@ -295,44 +295,37 @@
         return false
     }
     //是否是顺子
-    function isStraight(boardList,player){
+    function isStraight(boardList, player) {
         let list = boardList.slice();
-        //按照数字大小排序
-        list.sort(function(a,b){
-            return b.initialNum - a.initialNum
-        });
-
         //去重
-        for(let i = 0;i<list.length - 1;i++){
-            console.log(i);
-
-            if(list[i].initialNum === list[i+1].initialNum){
-                list[i].splice(i+1,1);
+        for (let i = 0; i < list.length - 1; i++) {
+            if (list[i].initialNum === list[i + 1].initialNum) {
+                list.splice(i + 1, 1);
                 i--
             }
         }
         //可能是顺子的列表
         let num = list.length - 5;
         //不够五张的不是顺子
-        if(num < 0){
+        if (num < 0) {
             console.log('不是顺子');
             return false
         }
-        else{
-            for(let i =0;i<num+1;i++){
+        else {
+            for (let i = 0; i < num + 1; i++) {
                 console.log(i);
-                if(list[i].initialNum - list[i+4].initialNum === 4){
+                if (list[i].initialNum - list[i + 4].initialNum === 4) {
                     //返回最大的顺子
-                    console.log(list.slice(i,i+5));
+                    console.log(list.slice(i, i + 5));
                     console.log('顺子');
                     player.level = '顺子';
-                    player.maxBoardList = list.slice(i,i+5);
+                    player.maxBoardList = list.slice(i, i + 5);
                     return true
                 }
 
-                if(list[0].initialNum === 14 && list[list.length - 4].initialNum === 4){
+                if (list[0].initialNum === 14 && list[list.length - 4].initialNum === 4) {
                     //特殊顺子1,2,3,4,5
-                    list.splice(1,num);
+                    list.splice(1, num);
                     console.log('12345顺子');
                     player.level = '12345顺子';
                     player.maxBoardList = list;
@@ -342,15 +335,82 @@
             }
         }
     }
+
     //是否是四条
-    function ifFourKind(boardList,player) {
+    function ifFourKind(boardList, player) {
         let list = boardList.slice();
-        let arr = [];
-        //按照数字大小排序
-        list.sort(function(a,b){
-            return b.initialNum - a.initialNum
+        //找出相同大小的数量
+        for (let i = 0; i < list.length;) {
+            let count = 0;
+            for (let j = i; j < list.length; j++) {
+                if (list[i].initialNum === list[j].initialNum) {
+                    count++;
+                    if (count > 3) {
+                        //添加四条的牌
+                        player.maxFourKind = list.splice(j - 3, 4);
+                        //添加剩余最大的牌
+                        player.maxFourKind.push(list[0]);
+                        //将剩余的牌添加到surplusBoardList属性中
+                        console.log('是四条');
+                        console.log(player);
+                        console.log(list[i]);
+                        return
+                    }
+                }
+            }
+            i += count;
+        }
+        return false
+
+    }
+    //是否是葫芦,三张同一点数的牌，加一对其他点数的牌。
+    function ifFullhouse(boardList, player) {
+        let list = boardList.slice();
+        let arr = equalNumberList(list);
+        let newList = [];
+        arr.sort(function (a,b) {
+            return b.count - a.count
         });
-        //找出相同花色的数量
+        console.log(arr);
+
+        if(arr[0].count === 3 && arr[1].count >= 2){
+            console.log('葫芦')
+        }
+        else if(arr[0].count === 3 && arr[1].count === 1){
+            console.log('三条')
+        }
+        else{
+            console.log('不是葫芦或三条');
+            return false
+        }
+
+        for (let i = 0; i < arr.length; i++) {
+
+                for (let k = 0; k < list.length; k++) {
+                    if (arr[i].ele === list[k].initialNum) {
+                        newList.push(list[k]);
+                    }
+                }
+            
+        }
+
+    }
+    //是否是三条
+    function isThreeKind(boardList, player) {
+
+    }
+    //是否是两对
+    function isTwoPairs(boardList, player) {
+
+    }
+    //是否是一对
+    function isOnePair(boardList, player) {
+
+    }
+
+    //数组获取相同元素的个数
+    function equalNumberList(list) {
+        let arr = [];
         for (let i = 0; i < list.length;) {
             let count = 0;
             for (let j = i; j < list.length; j++) {
@@ -359,12 +419,12 @@
                 }
             }
             arr.push({
-                date: list[i],
+                ele: list[i].initialNum,
                 count: count
             });
             i += count;
         }
-        console.log(arr)
+        return arr
     }
 
 
