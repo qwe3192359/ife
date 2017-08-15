@@ -16,11 +16,11 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             width: 100px;
+            height: 60px;
             text-align: center;
-            padding: 50px 0;
+            padding: 45px 0;
             font-size: 22px;
             margin-left: 20px;
-            margin-top: 20px;
         }
 
         #control {
@@ -39,12 +39,19 @@
             display: flex;
             justify-content: flex-start;
             flex-wrap: wrap;
-            padding: 0 20px 20px 0;
+            align-items: center;
+            padding: 20px 10px;
             border: 1px solid #eee;
             width: 640px;
-            height: 180px;
+            height: 150px;
             margin-left: 100px;
             margin-top: 20px;
+        }
+        .players-list{
+            width: 1000px;
+        }
+        .players-list p{
+            padding-left: 10px;
         }
     </style>
 </head>
@@ -55,10 +62,7 @@
 </div>
 <!--玩家牌区-->
 <div id="players">
-    <!--<div class="board-list">-->
-    <!--<div>玩家1</div>-->
 
-    <!--</div>-->
 </div>
 
 <!--控制区-->
@@ -66,6 +70,7 @@
     <button id="btn">发牌</button>
     <button id="btn2">计算结果</button>
     <button id="btn3">重新开始</button>
+    <div id="result"></div>
 </div>
 
 <script>
@@ -93,14 +98,14 @@
         //玩家人数，默认为2
         num = num || 2;
         //洗牌
-        boardArr = [3, 9, 3, 3, 4, 4, 4, 5, 5, 9, 10, 11, 12, 13, 14] || shuffle();
+        boardArr = shuffle();
         //公共牌
         commonBoard = [];
         //初始化玩家列表
         players.splice(0, players.length);
         players.length = num;
         for (let i = 0; i < num; i++) {
-            players[i] = new CreatePlayer()
+            players[i] = new CreatePlayer(i+1)
         }
         order = 0;
         //清空页面公共牌、玩家牌dom
@@ -109,15 +114,18 @@
         //页面添加玩家dom
         for (let i = 0; i < num; i++) {
             let div = document.createElement('div');
-            div.className = 'board-list';
-            div.innerText = '玩家' + i;
+            div.className = 'board-list players-list';
+            div.innerHTML = '<p>玩家' + (i + 1) + '</p>';
             document.getElementById('players').append(div);
         }
+
+        //清空结果
+        document.getElementById('result').innerText = '';
     }
 
     //创建玩家对象
-    function CreatePlayer() {
-        this.name = 1;
+    function CreatePlayer(name) {
+        this.name = '玩家' + name;
         this.myBoardList = [];
         this.myAllBoardList = [];
         this.maxBoardList = [];
@@ -162,7 +170,7 @@
             board.num = changeJQK(val - 26);
             board.initialNum = val - 26;
             board.suit = '♣';
-            board.suitValue = 1;
+            board.suitValue = 3;
             board.color = '#000';
             return board
         }
@@ -230,12 +238,24 @@
                 return b.initialNum - a.initialNum
             });
             console.log('玩家' + i);
-            isFlush(players[i].myAllBoardList, players[i]);
-            ifFourKind(players[i].myAllBoardList, players[i]);
-            ifFullhouse(players[i].myAllBoardList, players[i]);
+            if(isFlush(players[i].myAllBoardList, players[i])){
 
+            }
+            else if(isStraight(players[i].myAllBoardList, players[i])){
+
+            }
+            else if(ifFourKind(players[i].myAllBoardList, players[i])){
+
+            }
+            else{
+
+                isCardType(players[i].myAllBoardList, players[i])
+            }
+            //加载dom
+            addMaxBoardList(players[i].maxBoardList,i);
 
         }
+        compareBoardList();
     }
     //是否是同花
     function isFlush(boardList, player) {
@@ -278,6 +298,7 @@
                 let isStraightResult = isStraight(list, player);
                 if (isStraightResult) {
                     console.log('同花顺');
+                    player.level = 1;
                     return true
                 }
                 else {
@@ -286,7 +307,7 @@
                         return b.initialNum - a.initialNum
                     });
                     console.log('同花');
-                    player.level = '同花';
+                    player.level = 4;
                     player.maxBoardList = list.slice(0, 5);
                     return true
                 }
@@ -308,29 +329,27 @@
         let num = list.length - 5;
         //不够五张的不是顺子
         if (num < 0) {
-            console.log('不是顺子');
             return false
         }
         else {
             for (let i = 0; i < num + 1; i++) {
-                console.log(i);
                 if (list[i].initialNum - list[i + 4].initialNum === 4) {
                     //返回最大的顺子
                     console.log(list.slice(i, i + 5));
                     console.log('顺子');
-                    player.level = '顺子';
+                    player.level = 5;
                     player.maxBoardList = list.slice(i, i + 5);
                     return true
                 }
 
-                if (list[0].initialNum === 14 && list[list.length - 4].initialNum === 4) {
-                    //特殊顺子1,2,3,4,5
-                    list.splice(1, num);
-                    console.log('12345顺子');
-                    player.level = '12345顺子';
-                    player.maxBoardList = list;
-                    return true
-                }
+//                if (list[0].initialNum === 14 && list[list.length - 4].initialNum === 4) {
+//                    //特殊顺子1,2,3,4,5
+//                    list.splice(1, num);
+//                    console.log('12345顺子');
+//                    player.level = 5;
+//                    player.maxBoardList = list;
+//                    return true
+//                }
 
             }
         }
@@ -350,10 +369,8 @@
                         player.maxFourKind = list.splice(j - 3, 4);
                         //添加剩余最大的牌
                         player.maxFourKind.push(list[0]);
-                        //将剩余的牌添加到surplusBoardList属性中
+                        player.level = 2;
                         console.log('是四条');
-                        console.log(player);
-                        console.log(list[i]);
                         return
                     }
                 }
@@ -363,49 +380,60 @@
         return false
 
     }
-    //是否是葫芦,三张同一点数的牌，加一对其他点数的牌。
-    function ifFullhouse(boardList, player) {
+    //其他牌型
+    function isCardType(boardList, player) {
         let list = boardList.slice();
-        let arr = equalNumberList(list);
+        let arr = equalNumberList(list);    //每种牌的个数
         let newList = [];
         arr.sort(function (a,b) {
             return b.count - a.count
         });
-        console.log(arr);
-
+        //将牌列表按照数量大小排序，如果数量一样则按照大小排序
+        for (let i = 0; i < arr.length; i++) {
+            for (let k = 0; k < list.length; k++) {
+                if (arr[i].ele === list[k].initialNum) {
+                    newList.push(list[k]);
+                }
+            }
+        }
+        //一种牌有三张，两一种有两张以上
         if(arr[0].count === 3 && arr[1].count >= 2){
+            player.maxBoardList = newList.slice(0,5);
+            player.level = 3;
             console.log('葫芦')
         }
+        //只有一种牌是三张，其他都是1张
         else if(arr[0].count === 3 && arr[1].count === 1){
+            player.maxBoardList = newList.slice(0,5);
+            player.level = 6;
             console.log('三条')
         }
-        else{
-            console.log('不是葫芦或三条');
-            return false
+        else if(arr[2].count === 2){
+            if(arr[2].ele > arr[3].ele){
+                player.maxBoardList = newList.slice(0,5);
+            }
+            else{
+                player.maxBoardList = newList.slice(0,4);
+                player.maxBoardList.push(newList[newList.length-1]);
+            }
+            player.level = 7;
+            console.log('两队');
         }
-
-        for (let i = 0; i < arr.length; i++) {
-
-                for (let k = 0; k < list.length; k++) {
-                    if (arr[i].ele === list[k].initialNum) {
-                        newList.push(list[k]);
-                    }
-                }
-            
+        else if(arr[1].count === 2){
+            player.maxBoardList = newList.slice(0,5);
+            player.level = 7;
+            console.log('两对');
         }
-
-    }
-    //是否是三条
-    function isThreeKind(boardList, player) {
-
-    }
-    //是否是两对
-    function isTwoPairs(boardList, player) {
-
-    }
-    //是否是一对
-    function isOnePair(boardList, player) {
-
+        else if(arr[0].count === 2 && arr[1].count === 1){
+            player.maxBoardList = newList.slice(0,5);
+            player.level = 8;
+            console.log('一对');
+        }
+        else if(arr[0].count === 1){
+            player.maxBoardList = newList.slice(0,5);
+            player.level = 9;
+            console.log('单牌')
+        }
     }
 
     //数组获取相同元素的个数
@@ -427,6 +455,40 @@
         return arr
     }
 
+    //加载最大牌型的DOM
+    function addMaxBoardList(list,num){
+        let wrap = document.getElementById('players').children[num];
+        let p = document.createElement('p');
+        p.innerText = '最大牌型';
+        wrap.append(p);
+        for(let i = 0;i<list.length;i++){
+            let div = document.createElement('div');
+            div.innerHTML = '<div>' + list[i].num + '</div><div style="color:' + list.color + '">' + list[i].suit + '</div>';
+            div.className = 'board';
+            wrap.append(div);
+        }
+    }
+    
+    //比较牌型大小
+    function compareBoardList() {
+        let max = players[0];
+        for(let i = 1;i<players.length;i++){
+            if(max.level < players[i].level){
+                max = players[i]
+            }
+            else if(max.level === players[i].level){
+                for(let j = 0;j<max.maxBoardList.length;j++){
+                    if(max.maxBoardList[j].initialNum < players[i].maxBoardList[j].initialNum){
+                        max = players[i];
+                        break
+                    }
+                }
+            }
+        }
+        let div = document.getElementById('result');
+        div.innerText = '胜利者：' + max.name;
+
+    }
 
 </script>
 </body>
