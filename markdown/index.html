@@ -38,9 +38,13 @@
 </head>
 <body>
 <div class="wrap">
-    <div class="edit-wrap" contenteditable="true">
-        1111111111111
-        2222222222222222
+    <div class="edit-wrap" >
+        <div id="con" contenteditable="true" >
+            <div># 一级标题</div>
+            <div>## 二级标题</div>
+            <div>### 三级标题</div>
+        </div>
+
     </div>
     <div class="show-wrap">
         111
@@ -52,12 +56,44 @@
 
 
 <script>
-    var a= `1
 
 
-    2
+    let b = `12
+    2323
+    24242
+    25252
     3`;
-    console.log(a.search(/\n/g))
+    document.getElementById('con').onkeyup = sliceCon;
+    //使用换行符切割字符串
+    function sliceCon() {
+        let list = document.getElementById('con').innerText.split(/[\n\r]/);
+        for(let i =0;i<list.length;i++){
+            isEle(list[i]);
+        }
+    }
+    function isEle(list) {
+        let h6 = /#{6}/,
+            h5 = /#{5}/,
+            h4 = /#{4}/,
+            h3 = /#{3}/,
+            h2 = /#{2}/,
+            h1 = /#/;
+        if(list.search(h1) >= 0){
+            console.log('h6');
+            return 'h6'
+        }
+        else if(list.search(h1) >= 0){
+            console.log('h5');
+            return 'h5'
+        }
+        console.log('h')
+    }
+
+    function createElement(ele,text,id) {
+        let newEle = document.createElement('ele');
+        newEle.innerText = text;
+        id.append(e)
+    }
 </script>
 
 
