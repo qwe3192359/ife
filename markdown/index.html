@@ -46,8 +46,8 @@
         </div>
 
     </div>
-    <div class="show-wrap">
-        111
+    <div class="show-wrap" id="show-wrap">
+
     </div>
 
 
@@ -57,42 +57,110 @@
 
 <script>
 
-
-    let b = `12
-    2323
-    24242
-    25252
-    3`;
+    let showCon = document.getElementById('show-wrap');
+    sliceCon();
     document.getElementById('con').onkeyup = sliceCon;
     //使用换行符切割字符串
     function sliceCon() {
+        showCon.innerHTML = '';
         let list = document.getElementById('con').innerText.split(/[\n\r]/);
         for(let i =0;i<list.length;i++){
             isEle(list[i]);
         }
     }
     function isEle(list) {
-        let h6 = /#{6}/,
-            h5 = /#{5}/,
-            h4 = /#{4}/,
-            h3 = /#{3}/,
-            h2 = /#{2}/,
-            h1 = /#/;
-        if(list.search(h1) >= 0){
-            console.log('h6');
-            return 'h6'
+        let RegExpList = [
+            {
+                title: 'h6',
+                regexp: /^#{6}\s/
+            },
+            {
+                title: 'h5',
+                regexp: /^#{5}\s/
+            },
+            {
+                title: 'h4',
+                regexp: /^#{4}\s/
+            },
+            {
+                title: 'h3',
+                regexp: /^#{3}\s/
+            },
+            {
+                title: 'h2',
+                regexp: /^#{2}\s/
+            },
+            {
+                title: 'h1',
+                regexp: /^#\s/
+            },
+            {
+                title: 'ol',
+                regexp: /^[\-\*]\s/
+            },
+            {
+                title: 'ul',
+                regexp: /^\d\s/
+            },
+            {
+                title: 'quote',
+                regexp: /^\>\s/
+            },
+            {
+                title: 'img',
+                regexp: /^\[[\s\S]*?\]\([\s\S]*?\)/
+            },
+            {
+                title: 'a',
+                regexp: /^!\[[\s\S]*?\]\([\s\S]*?\)/
+            },
+            {
+                title: 'b',
+                regexp: /\*\*[\s\S]*?\*\*/
+            },
+            {
+                title: 'i',
+                regexp: /\*[\s\S]*?\*/
+            },
+            {
+                title: 'code',
+                regexp: /^\`[\s\S]*?\`/
+            },
+            {
+                title: 'codeP',
+                regexp: /^\`{3}[\s\S]*?\`{3}/
+            },
+            {
+                title: 'hr',
+                regexp: /^\*{3}/
+            }
+        ];
+        for (let i in RegExpList){
+            if(list.search(RegExpList[i].regexp) === 0){
+                list.replace(RegExpList[i].regexp,'');
+                //在右侧添加dom
+                createElement(RegExpList[i].title,list);
+                console.log(RegExpList[i].title);
+                return
+            }
         }
-        else if(list.search(h1) >= 0){
-            console.log('h5');
-            return 'h5'
-        }
-        console.log('h')
+        createElement('p',list);
+        return
     }
+    //添加dom
+    function createElement(ele,text) {
+        //需要整行替换
+        if(ele === 'h1' || 'h2' || 'h3' || 'h4' || 'h5' || 'h6'){
+            let newEle = document.createElement(ele);
+            newEle.innerText = text;
+            showCon.appendChild(newEle);
+        }
+        //
+        else if(ele === 'code' || 'b' || 'i'){
+            
+        }
 
-    function createElement(ele,text,id) {
-        let newEle = document.createElement('ele');
-        newEle.innerText = text;
-        id.append(e)
+
     }
 </script>
 
