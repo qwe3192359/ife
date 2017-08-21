@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <title>简易markdown文件解析器</title>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        .wrap{
+
+        .wrap {
             width: 100%;
             height: 100%;
             overflow: hidden;
         }
-        .edit-wrap{
+
+        .edit-wrap {
             width: 50%;
             padding-left: 50px;
             padding-top: 100px;
@@ -23,7 +25,8 @@
             overflow-x: auto;
             float: left;
         }
-        .show-wrap{
+
+        .show-wrap {
             width: 50%;
             padding-left: 50px;
             padding-top: 100px;
@@ -31,15 +34,85 @@
             min-height: 100vh;
             float: left;
         }
-        div{
+
+        div {
             outline: none;
+        }
+
+        html {
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0 0 15px 0;
+        }
+
+        h1 {
+            font-size: 26px;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        h3 {
+            font-size: 22px;
+        }
+
+        h4 {
+            font-size: 20px;
+        }
+
+        h5 {
+            font-size: 18px;
+        }
+
+        h6 {
+            font-size: 16px;
+        }
+
+        ul, ol {
+            padding: 0;
+            margin: 0 0 10px 25px;
+        }
+
+        .quote {
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: whitesmoke;
+            border-left: 6px solid #b4b4b4;
+        }
+
+        code {
+            padding: 2px 4px;
+            background-color: #f6f6f6;
+            border: none;
+            color: #657b83;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
+        .code-block {
+            display: block;
+            padding: 10px;
+            margin: 0 0 10px;
+            font-size: 13px;
+            line-height: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: #f6f6f6;
+        }
+
+        a {
+            text-decoration: none;
+            color: #3194d0;
         }
     </style>
 </head>
 <body>
 <div class="wrap">
-    <div class="edit-wrap" >
-        <div id="con" contenteditable="true" >
+    <div class="edit-wrap">
+        <div id="con" contenteditable="true">
             <div># 一级标题</div>
             <div>## 二级标题</div>
             <div>### 三级标题</div>
@@ -47,6 +120,37 @@
 
     </div>
     <div class="show-wrap" id="show-wrap">
+        <h1>1</h1>
+        <h2>1</h2>
+        <h3>1</h3>
+        <h4>1</h4>
+        <h5>1</h5>
+        <h6>1</h6>
+        <h6>1</h6>
+        <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+
+        </ul>
+        <ol>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+        </ol>
+        <div class="quote">
+            >1111
+        </div>
+        <div class="code-block">
+            code1111
+        </div>
+        <div>
+            1111<span class="code">111</span>code1111
+        </div>
+
+        <a href="">111</a>
+        <b>1111</b>
+        <i>1111</i>
 
     </div>
 
@@ -54,116 +158,137 @@
 </div>
 
 
-
 <script>
 
     let showCon = document.getElementById('show-wrap');
-    sliceCon();
+    //sliceCon();
     document.getElementById('con').onkeyup = sliceCon;
     //使用换行符切割字符串
     function sliceCon() {
         showCon.innerHTML = '';
         let list = document.getElementById('con').innerText.split(/[\n\r]/);
-        for(let i =0;i<list.length;i++){
-            isEle(list[i]);
+        for (let i = 0; i < list.length; i++) {
+            list[i] = replace(list[i]);
+            createElement(list[i]);
+
         }
     }
-    function isEle(list) {
+    //替换可以被嵌套的元素链接、粗体、斜体、代码块
+    function replace(list) {
         let RegExpList = [
             {
-                title: 'h6',
-                regexp: /^#{6}\s/
-            },
-            {
-                title: 'h5',
-                regexp: /^#{5}\s/
-            },
-            {
-                title: 'h4',
-                regexp: /^#{4}\s/
-            },
-            {
-                title: 'h3',
-                regexp: /^#{3}\s/
-            },
-            {
-                title: 'h2',
-                regexp: /^#{2}\s/
-            },
-            {
-                title: 'h1',
-                regexp: /^#\s/
-            },
-            {
-                title: 'ol',
-                regexp: /^[\-\*]\s/
-            },
-            {
-                title: 'ul',
-                regexp: /^\d\s/
-            },
-            {
-                title: 'quote',
-                regexp: /^\>\s/
-            },
-            {
-                title: 'img',
-                regexp: /^\[[\s\S]*?\]\([\s\S]*?\)/
-            },
-            {
                 title: 'a',
-                regexp: /^!\[[\s\S]*?\]\([\s\S]*?\)/
+                tag: 'a',
+                regexp: /^!\[[\s\S]*?\]\([\s\S]*?\)/g
             },
             {
                 title: 'b',
-                regexp: /\*\*[\s\S]*?\*\*/
+                tag: 'b',
+                regexp: /\*\*[\S]*?\*\*/g,
+                delSymbol: /\*\*/g
             },
             {
                 title: 'i',
-                regexp: /\*[\s\S]*?\*/
+                tag: 'i',
+                regexp: /\*[\S]*?\*/g,
+                delSymbol: /\*/g
+            },
+            {
+                title: 'code block',
+                tag: 'div',
+                regexp: /\`{3}[^\`]+\`{3}?/g,
+                delSymbol: /\`\`\`/g,
+                class: 'code-block'
             },
             {
                 title: 'code',
-                regexp: /^\`[\s\S]*?\`/
+                tag: 'code',
+                regexp: /\`[^\`]+?\`/g,
+                delSymbol: /\`/g
             },
             {
-                title: 'codeP',
-                regexp: /^\`{3}[\s\S]*?\`{3}/
+                title: 'quote',
+                tag: 'div',
+                regexp: /^\>\s/,
+                delSymbol: /\>/g,
+                class: 'quote'
+            },
+            {
+                title: 'h6',
+                tag: 'h6',
+                regexp: /^#{6}\s[\s\S]*/,
+                delSymbol: /^#{6}\s/,
+            },
+            {
+                title: 'h5',
+                tag: 'h5',
+                regexp: /^#{5}\s[\s\S]*/,
+                delSymbol: /^#{5}\s/,
+            },
+            {
+                title: 'h4',
+                tag: 'h4',
+                regexp: /^#{4}\s[\s\S]*/,
+                delSymbol: /^#{4}\s/,
+            },
+            {
+                title: 'h3',
+                tag: 'h3',
+                regexp: /^#{3}\s[\s\S]*/,
+                delSymbol: /^#{3}\s/,
+            },
+            {
+                title: 'h2',
+                tag: 'h2',
+                regexp: /^#{2}\s[\s\S]*/,
+                delSymbol: /^#{2}\s/,
+            },
+            {
+                title: 'h1',
+                tag: 'h1',
+                regexp: /^#\s[\s\S]*/,
+                delSymbol: /^#\s/,
+            },
+            {
+                title: 'ol',
+                tag: '',
+                regexp: /^[\-\*]\s/,
+                delSymbol: /1/g,
+            },
+            {
+                title: 'ul',
+                tag: '',
+                regexp: /^\d\s/,
+                delSymbol: /1/g,
+            },
+
+            {
+                title: 'img',
+                tag: '',
+                regexp: /^\[[\s\S]*?\]\([\s\S]*?\)/,
+                delSymbol: /1/g,
             },
             {
                 title: 'hr',
-                regexp: /^\*{3}/
+                tag: '',
+                regexp: /^\*{3}/,
+                delSymbol: /1/g,
             }
         ];
-        for (let i in RegExpList){
-            if(list.search(RegExpList[i].regexp) === 0){
-                list.replace(RegExpList[i].regexp,'');
-                //在右侧添加dom
-                createElement(RegExpList[i].title,list);
-                console.log(RegExpList[i].title);
-                return
-            }
+        for (let i in RegExpList) {
+            list = list.replace(RegExpList[i].regexp, function (con) {
+                con = con.replace(RegExpList[i].delSymbol, '');
+                return '<' + RegExpList[i].tag + ' class="' + RegExpList[i].class + '">' + con + '</' + RegExpList[i].tag + '>'
+            })
         }
-        createElement('p',list);
-        return
+        return list
     }
+
     //添加dom
-    function createElement(ele,text) {
-        //需要整行替换
-        if(ele === 'h1' || 'h2' || 'h3' || 'h4' || 'h5' || 'h6'){
-            let newEle = document.createElement(ele);
-            newEle.innerText = text;
-            showCon.appendChild(newEle);
-        }
-        //
-        else if(ele === 'code' || 'b' || 'i'){
-            
-        }
-
-
+    function createElement(text) {
+            showCon.innerHTML += text;
     }
 </script>
-
 
 
 </body>
