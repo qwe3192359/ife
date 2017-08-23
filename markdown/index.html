@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>简易markdown文件解析器</title>
     <style>
         * {
@@ -120,41 +121,10 @@
 
     </div>
     <div class="show-wrap" id="show-wrap">
-        <h1>1</h1>
-        <h2>1</h2>
-        <h3>1</h3>
-        <h4>1</h4>
-        <h5>1</h5>
-        <h6>1</h6>
-        <h6>1</h6>
-        <ul>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-
-        </ul>
-        <ol>
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-        </ol>
-        <div class="quote">
-            >1111
-        </div>
-        <div class="code-block">
-            code1111
-        </div>
-        <div>
-            1111<span class="code">111</span>code1111
-        </div>
-
-        <a href="">111</a>
-        <b>1111</b>
-        <i>1111</i>
-
+        <h1>一级标题</h1>
+        <h2>二级标题</h2>
+        <h3>三级标题</h3>
     </div>
-
-
 </div>
 
 
@@ -177,21 +147,30 @@
     function replace(list) {
         let RegExpList = [
             {
+                title: 'hr',
+                tag: '',
+                regexp: /^\*{3}/,
+                class: ''
+            },
+            {
                 title: 'a',
                 tag: 'a',
-                regexp: /^!\[[\s\S]*?\]\([\s\S]*?\)/g
+                regexp: /^!\[[\s\S]*?\]\([\s\S]*?\)/g,
+                class: ''
             },
             {
                 title: 'b',
                 tag: 'b',
                 regexp: /\*\*[\S]*?\*\*/g,
-                delSymbol: /\*\*/g
+                delSymbol: /\*\*/g,
+                class: ''
             },
             {
                 title: 'i',
                 tag: 'i',
                 regexp: /\*[\S]*?\*/g,
-                delSymbol: /\*/g
+                delSymbol: /\*/g,
+                class: ''
             },
             {
                 title: 'code block',
@@ -204,7 +183,8 @@
                 title: 'code',
                 tag: 'code',
                 regexp: /\`[^\`]+?\`/g,
-                delSymbol: /\`/g
+                delSymbol: /\`/g,
+                class: ''
             },
             {
                 title: 'quote',
@@ -218,48 +198,56 @@
                 tag: 'h6',
                 regexp: /^#{6}\s[\s\S]*/,
                 delSymbol: /^#{6}\s/,
+                class: ''
             },
             {
                 title: 'h5',
                 tag: 'h5',
                 regexp: /^#{5}\s[\s\S]*/,
                 delSymbol: /^#{5}\s/,
+                class: ''
             },
             {
                 title: 'h4',
                 tag: 'h4',
                 regexp: /^#{4}\s[\s\S]*/,
                 delSymbol: /^#{4}\s/,
+                class: ''
             },
             {
                 title: 'h3',
                 tag: 'h3',
                 regexp: /^#{3}\s[\s\S]*/,
                 delSymbol: /^#{3}\s/,
+                class: ''
             },
             {
                 title: 'h2',
                 tag: 'h2',
                 regexp: /^#{2}\s[\s\S]*/,
                 delSymbol: /^#{2}\s/,
+                class: ''
             },
             {
                 title: 'h1',
                 tag: 'h1',
                 regexp: /^#\s[\s\S]*/,
                 delSymbol: /^#\s/,
+                class: ''
             },
             {
                 title: 'ol',
-                tag: '',
-                regexp: /^[\-\*]\s/,
-                delSymbol: /1/g,
+                tag: 'li',
+                regexp: /^[\-\*]\s[\s\S]*/,
+                delSymbol: /^[\-\*]\s/g,
+                class: ''
             },
             {
                 title: 'ul',
-                tag: '',
-                regexp: /^\d\s/,
-                delSymbol: /1/g,
+                tag: 'li',
+                regexp: /^\d\s[\s\S]*/,
+                delSymbol: /^\d\s/g,
+                class: ''
             },
 
             {
@@ -267,16 +255,14 @@
                 tag: '',
                 regexp: /^\[[\s\S]*?\]\([\s\S]*?\)/,
                 delSymbol: /1/g,
-            },
-            {
-                title: 'hr',
-                tag: '',
-                regexp: /^\*{3}/,
-                delSymbol: /1/g,
+                class: ''
             }
         ];
         for (let i in RegExpList) {
             list = list.replace(RegExpList[i].regexp, function (con) {
+                if(RegExpList[i].title === 'hr'){
+                    return '<hr/>'
+                }
                 con = con.replace(RegExpList[i].delSymbol, '');
                 return '<' + RegExpList[i].tag + ' class="' + RegExpList[i].class + '">' + con + '</' + RegExpList[i].tag + '>'
             })
@@ -287,6 +273,7 @@
     //添加dom
     function createElement(text) {
             showCon.innerHTML += text;
+            console.log(text)
     }
 </script>
 
