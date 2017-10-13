@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        .wrap{
+        .wrap {
             position: relative;
             text-align: center;
         }
-        .can {
-            border: 1px solid #eee;
-        }
-        .wrap .win{
+        .wrap .win {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -21,48 +18,47 @@
             justify-content: center;
             align-items: center;
         }
-        .wrap .win span{
-            padding: 5px 6px;
-            background: #00cc00;
-            color: #fff;
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body>
 <div class="wrap" id="wrap">
-    <canvas id="can" class="can" width="500" height="500"></canvas>
-    <div class="win" id="win">
-        <span>胜利</span>
-    </div>
+
 </div>
 
 <script>
     //五子棋构造函数
-    function Gobang() {
-        //获取canvas元素
-        this.drawing = document.getElementById('can');
-        this.con = this.drawing.getContext('2d');
-        //当前落子颜色，黑棋或白棋，true白棋
-        this.man = true;
-        //棋子数组
-        this.piecesArray = [];       //落下的所有棋子数据
-        this.whitePiecesArray = [];  //白棋数据
-        this.blackPiecesArray = [];  //黑棋数据
-        //参数配置
+    function Gobang(id) {
+        this.id = id.replace('#','');
+        //参数配置，尚未开始做
         this.customConfig = {
             wrapBor: '',
             canBor: '',
-
         }
     }
     //修改原型
     Gobang.prototype = {
         //绘制棋牌
         _draw: function () {
-            this.con.strokeStyle = '#eee';    //描边矩形颜色，棋盘网格颜色
-            this.con.beginPath();    //开始路径
+            this.con.fillStyle = '#f4d76f'; //棋盘背景色
+            this.con.fillRect(0, 0, 500, 500); //绘制棋盘背景
+
+            this.con.fillStyle = '#333';    //棋盘外层数字颜色及棋盘中心圆点颜色
+            this.con.strokeStyle = '#000';    //外层边框宽度颜色
+            this.con.lineWidth = 2; //外层边框宽度
+            this.con.strokeRect(20, 20, 460, 460); //绘制外层边框
+            this.con.textAlign = 'center';  //外层边框文字对齐方式
+            //添加外层边框数字
+            for (let i = 0; i < 15; i++) {
+                this.con.fillText(i + 1, 40 + i * 30, 15);
+                this.con.fillText(i + 1, 10, 40 + i * 30);
+            }
+
+            //绘制棋盘线条
+            this.con.beginPath();    //开始绘制棋盘路径
             this.con.translate(40, 40);   //移动坐标原点
+            this.con.save(); //保存当前状态
+            this.con.strokeStyle = '#333';    //棋盘线条颜色
+            this.con.lineWidth = 1; //棋盘线条宽度
             //循环绘制棋盘路径
             for (let i = 0; i < 15; i++) {
                 this.con.moveTo(0, i * 30);
@@ -72,9 +68,26 @@
                 this.con.moveTo(i * 30, 0);
                 this.con.lineTo(i * 30, 420);
             }
-            this.con.stroke();
+            this.con.stroke();  //绘制棋盘路径
+
+            //绘制棋盘五点圆点
+            this.con.beginPath();    //开始绘制棋盘黑点路径
+            this.con.moveTo(90, 90);    //移动路径点
+            this.con.arc(90, 90, 4, 0, 2 * Math.PI);  //绘制圆点
+            this.con.moveTo(330, 90);
+            this.con.arc(330, 90, 4, 0, 2 * Math.PI);
+            this.con.moveTo(210, 210);
+            this.con.arc(210, 210, 4, 0, 2 * Math.PI);
+            this.con.moveTo(90, 330);
+            this.con.arc(90, 330, 4, 0, 2 * Math.PI);
+            this.con.moveTo(330, 330);
+            this.con.arc(330, 330, 4, 0, 2 * Math.PI);
+            this.con.fill();     //绘制棋盘黑点路径
+
+            this._pieceEvent(); //绑定棋子落子事件
+
         },
-        //绑定棋盘落子事件
+        //绑定棋盘落子事件并计算棋子位置
         _pieceEvent: function () {
             let that = this;
             that.drawing.onclick = function (e) {
@@ -95,49 +108,51 @@
         },
         //落子
         _piece: function (x, y) {
-            //白棋棋子渐变
-            let black = this.con.createRadialGradient(x * 30, y * 30, 5, x * 30, y * 30, 15);
-            black.addColorStop(0, '#0a0a0a');
-            black.addColorStop(1, '#666');
-            //黑棋棋子渐变
-            let white = this.con.createRadialGradient(30, 30, 5, 30, 30, 15);
-            white.addColorStop(0, '#f9f9f9');
-            white.addColorStop(1, '#d1d1d1');
+            //当前canvas坐标原点在（40,40），以下都是按照这个坐标进行计算
+            //x，y为当前棋子坐在的位置
+            //黑棋棋子渐变色
+            let blackPieceColor = this.con.createRadialGradient(x * 30, y * 30, 5, x * 30 + 16, y * 30 + 16, 35);
+            blackPieceColor.addColorStop(0, '#0a0a0a');
+            blackPieceColor.addColorStop(1, '#666');
+            //白棋棋子渐变色
+            let whitePieceColor = this.con.createRadialGradient(x * 30, y * 30, 5, x * 30 + 16, y * 30 + 16, 35);
+            whitePieceColor.addColorStop(0, '#efefef');
+            whitePieceColor.addColorStop(1, '#d1d1d1');
             //当前落子为黑棋还是白棋
-            if (this.man) {
-                this.con.fillStyle = white;
-                this.man = false;
-                //保存棋子
+            if (this.pieceColor === 'white') {
+                this.con.fillStyle = whitePieceColor;   //当前棋子颜色为白色
+                //保存棋子数据
                 this.piecesArray.push([x, y]);
                 this.whitePiecesArray.push([x, y]);
+                this.pieceColor = 'black';  //更改下次落子棋子颜色
             }
             else {
-                this.con.fillStyle = black;
-                this.man = true;
-                //保存棋子
+                this.con.fillStyle = blackPieceColor;
+                //保存棋子数据
                 this.piecesArray.push([x, y]);
                 this.blackPiecesArray.push([x, y]);
+                this.pieceColor = 'white';
             }
             //绘制棋子
             this.con.beginPath();
             this.con.arc(x * 30, y * 30, 14, 0, 2 * Math.PI, false);
             this.con.fill();
-
-            this._victory();
+            this._victory();    //胜负判断
         },
         //胜负判定
         _victory: function () {
-            //将黑、白棋数组保存在新的数组里
+            //将黑、白棋子落子数据保存在新的数组里，不改变原始数据
             let newWhitePiecesArray = this.whitePiecesArray.concat();
             let newBlackPiecesArray = this.blackPiecesArray.concat();
+            //棋子数量少于5个不进行胜负判断
             if (newWhitePiecesArray.length < 5) {
                 return
             }
-            if (this._verticalWin(newWhitePiecesArray) || this._acrossWin(newWhitePiecesArray)) {
+            if (this._win(newWhitePiecesArray)) {
                 console.log('白棋胜利');
                 this._winModal('白棋胜利');
             }
-            else if (this._verticalWin(newBlackPiecesArray) || this._acrossWin(newBlackPiecesArray)) {
+            else if (this._win(newBlackPiecesArray)) {
                 console.log('黑棋胜利');
                 this._winModal('黑棋胜利');
             }
@@ -176,12 +191,10 @@
         _verticalWin: function (arr) {
             arr = this._verticalSort(arr);
             //竖排胜利
-            let j = 0;
-            for (let i = 0; i < arr.length - 1; i++) {
+            for (let i = 0, j = 0; i < arr.length - 1; i++) {
                 if (arr[i][0] === arr[i + 1][0] && arr[i][1] + 1 === arr[i + 1][1]) {
                     j++;
                     if (j === 4) {
-                        console.log('胜利');
                         return true
                     }
                 }
@@ -189,36 +202,16 @@
                     j = 0;
                 }
             }
-
-            //斜排胜利
-            let k = 1;
-            for (let i = 0; i < arr.length - 1; i++) {
-                for (let j = 1; j < arr.length; j++) {
-                    if (arr[i][0] + k === arr[j][0] && arr[i][1] + k === arr[j][1]) {
-                        k++;
-                        if (k === 5) {
-                            console.log('胜利');
-                            return true
-                        }
-                    }
-                    else {
-                        k = 1
-                    }
-                }
-            }
-
+            return false
         },
         //横排排序后胜负判断
         _acrossWin: function (arr) {
             arr = this._acrossSort(arr);
             //横排胜利
-            let j = 0;
-            for (let i = 0; i < arr.length - 1; i++) {
+            for (let i = 0, j = 0; i < arr.length - 1; i++) {
                 if (arr[i][1] === arr[i + 1][1] && arr[i][0] + 1 === arr[i + 1][0]) {
                     j++;
                     if (j === 4) {
-                        console.log('胜利');
-                        console.log(arr)
                         return true
                     }
                 }
@@ -226,54 +219,100 @@
                     j = 0;
                 }
             }
+            return false
+        },
+        //斜着胜利/
+        _obliqueWin:function (arr) {
+            arr = arr.concat();
+            for (let i = 0; i < arr.length; i++) {
+                arr[i] = arr[i][0] + arr[i][1]
+            }
+            return this._arrEleSame(arr);
+        },
+        //反斜着胜利\
+        _reverseObliqueWin: function (arr) {
+            arr = arr.concat();
+            for (let i = 0; i < arr.length; i++) {
+                arr[i] = 14-arr[i][0] + arr[i][1]
+            }
+            return this._arrEleSame(arr);
+        },
+        //找出数组中相同元素的个数,我五个以上即为胜利
+        _arrEleSame: function (result) {
 
-            //反斜排胜利
-            let k = 1;
-            for (let i = 0; i < arr.length - 1; i++) {
-                for (let j = 1; j < arr.length; j++) {
-                    if (arr[i][1] + k === arr[j][1] && arr[i][0] - k === arr[j][0]) {
-                        k++;
-                        if (k === 5) {
-                            console.log('胜利');
+            result.sort();
+            for (let i = 0; i < result.length;) {
+                let count = 0;
+                for (let j = i; j < result.length; j++) {
+                    if (result[i] === result[j]) {
+                        count++;
+                        if(count === 5){
                             return true
                         }
                     }
-                    else {
-                        k = 1
-                    }
                 }
+                i += count;
+            }
+            return false
+        },
+        //胜负判断
+        _win: function (arr) {
+            if(this._verticalWin(arr)){
+                return true
+            }
+            else if(this._acrossWin(arr)){
+                return true
+            }
+            else if(this._obliqueWin(arr)){
+                return true
+            }
+            else if(this._reverseObliqueWin(arr)){
+                return true
+            }
+            else{
+                return false
             }
         },
         //结束后出现的模态框
         _winModal: function (text) {
             let that = this;
-            document.getElementById('win').style.display = 'flex';
-            document.getElementById('win').innerText = text;
-            document.getElementById('win').onclick = function () {
+            let win = this._$('win');
+            win.style.display = 'flex';
+            win.innerText = text;
+            win.onclick = function () {
                 that.clear();
-                document.getElementById('win').style.display = 'none';
+                win.style.display = 'none';
             }
-
         },
-        //重置
+        //id选择器
+        _$:function (id) {
+            return document.getElementById(id)
+        },
+        //初始化数据
         clear: function () {
             //重置画布
             this.drawing.width = 500;
-            this.man = true;
-            //重置棋子数据
+            this.drawing.height = 500;
+            this.pieceColor = 'white';
+            //清空保存的棋子数据
             this.piecesArray = [];       //落下的所有棋子数据
             this.whitePiecesArray = [];  //白棋数据
             this.blackPiecesArray = [];  //黑棋数据
-            this.create();
-        },
-        //创建五子棋
-        create: function () {
             this._draw();
-            this._pieceEvent();
+        },
+        //初始化棋盘
+        create: function () {
+            //添加dom
+            this._$(this.id).innerHTML = '<canvas id="can" ></canvas> <div class="win" id="win"> </div>';
+            
+            //获取canvas元素
+            this.drawing = this._$('can');
+            this.con = this.drawing.getContext('2d');
+            this.clear();
         }
     };
     //创建五子棋
-    let newGobang = new Gobang();
+    let newGobang = new Gobang('#wrap');
     //初始化
     newGobang.create();
 
