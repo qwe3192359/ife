@@ -7,18 +7,26 @@
         .wrap {
             position: relative;
             text-align: center;
+            width: 500px;
+            height: 560px;
+            margin: 0 auto;
+        }
+        .wrap canvas{
+            position: absolute;
+            left: 0;
         }
         .wrap .win {
             position: absolute;
-            width: 100%;
+            left: 0;
+            width: 500px;
             height: 100%;
             top: 0;
-            left: 0;
             display: none;
             justify-content: center;
             align-items: center;
         }
-        .wrap .win span{
+
+        .wrap .win span {
             padding: 8px;
             background: #ef6c00;
             color: #fff;
@@ -33,7 +41,7 @@
 <script>
     //五子棋构造函数
     function Gobang(id) {
-        this.id = id.replace('#','');
+        this.id = id.replace('#', '');
         //参数配置，尚未开始做
         this.customConfig = {
             wrapBor: '',
@@ -44,61 +52,61 @@
     Gobang.prototype = {
         //绘制棋牌
         _draw: function () {
-            this.con.fillStyle = '#f4d76f'; //棋盘背景色
-            this.con.fillRect(0, 0, 500, 560); //绘制棋盘背景
+            this.conWrap.fillStyle = '#f4d76f'; //棋盘背景色
+            this.conWrap.fillRect(0, 0, 500, 560); //绘制棋盘背景
 
-            this.con.fillStyle = '#333';    //棋盘外层数字颜色及棋盘中心圆点颜色
-            this.con.strokeStyle = '#000';    //外层边框宽度颜色
-            this.con.lineWidth = 2; //外层边框宽度
-            this.con.strokeRect(20, 20, 460, 460); //绘制外层边框
-            this.con.textAlign = 'center';  //外层边框文字对齐方式
+            this.conWrap.fillStyle = '#333';    //棋盘外层数字颜色及棋盘中心圆点颜色
+            this.conWrap.strokeStyle = '#000';    //外层边框宽度颜色
+            this.conWrap.lineWidth = 2; //外层边框宽度
+            this.conWrap.strokeRect(20, 20, 460, 460); //绘制外层边框
+            this.conWrap.textAlign = 'center';  //外层边框文字对齐方式
             //添加外层边框数字
             for (let i = 0; i < 15; i++) {
-                this.con.fillText(i + 1, 40 + i * 30, 15);
-                this.con.fillText(i + 1, 10, 40 + i * 30);
+                this.conWrap.fillText(i + 1, 40 + i * 30, 15);
+                this.conWrap.fillText(i + 1, 10, 40 + i * 30);
             }
 
             //绘制棋盘线条
-            this.con.beginPath();    //开始绘制棋盘路径
-            this.con.translate(40, 40);   //移动坐标原点
-            this.con.save(); //保存当前状态
-            this.con.strokeStyle = '#333';    //棋盘线条颜色
-            this.con.lineWidth = 1; //棋盘线条宽度
+            this.conWrap.beginPath();    //开始绘制棋盘路径
+            this.conWrap.translate(40, 40);   //移动坐标原点
+            this.conWrap.save(); //保存当前状态
+            this.conWrap.strokeStyle = '#333';    //棋盘线条颜色
+            this.conWrap.lineWidth = 1; //棋盘线条宽度
             //循环绘制棋盘路径
             for (let i = 0; i < 15; i++) {
-                this.con.moveTo(0, i * 30);
-                this.con.lineTo(420, i * 30);
+                this.conWrap.moveTo(0, i * 30);
+                this.conWrap.lineTo(420, i * 30);
             }
             for (let i = 0; i < 15; i++) {
-                this.con.moveTo(i * 30, 0);
-                this.con.lineTo(i * 30, 420);
+                this.conWrap.moveTo(i * 30, 0);
+                this.conWrap.lineTo(i * 30, 420);
             }
-            this.con.stroke();  //绘制棋盘路径
+            this.conWrap.stroke();  //绘制棋盘路径
 
             //绘制棋盘五点圆点
-            this.con.beginPath();    //开始绘制棋盘黑点路径
-            this.con.moveTo(90, 90);    //移动路径点
-            this.con.arc(90, 90, 4, 0, 2 * Math.PI);  //绘制圆点
-            this.con.moveTo(330, 90);
-            this.con.arc(330, 90, 4, 0, 2 * Math.PI);
-            this.con.moveTo(210, 210);
-            this.con.arc(210, 210, 4, 0, 2 * Math.PI);
-            this.con.moveTo(90, 330);
-            this.con.arc(90, 330, 4, 0, 2 * Math.PI);
-            this.con.moveTo(330, 330);
-            this.con.arc(330, 330, 4, 0, 2 * Math.PI);
-            this.con.fill();     //绘制棋盘黑点路径
+            this.conWrap.beginPath();    //开始绘制棋盘黑点路径
+            this.conWrap.moveTo(90, 90);    //移动路径点
+            this.conWrap.arc(90, 90, 4, 0, 2 * Math.PI);  //绘制圆点
+            this.conWrap.moveTo(330, 90);
+            this.conWrap.arc(330, 90, 4, 0, 2 * Math.PI);
+            this.conWrap.moveTo(210, 210);
+            this.conWrap.arc(210, 210, 4, 0, 2 * Math.PI);
+            this.conWrap.moveTo(90, 330);
+            this.conWrap.arc(90, 330, 4, 0, 2 * Math.PI);
+            this.conWrap.moveTo(330, 330);
+            this.conWrap.arc(330, 330, 4, 0, 2 * Math.PI);
+            this.conWrap.fill();     //绘制棋盘黑点路径
 
             //绘制功能区域
-            this.con.fillStyle = '#ef6c00';
-            this.con.fillRect(15, 465, 60, 30);
-            this.con.fillRect(105, 465, 60, 30);
-            this.con.fillStyle = '#fff';
-            this.con.font = '20px Arial';
-            this.con.fillText('重玩',45,488);
-            this.con.fillText('悔棋',135,488);
+            this.conWrap.fillStyle = '#ef6c00';
+            this.conWrap.fillRect(15, 465, 60, 30);
+            this.conWrap.fillRect(105, 465, 60, 30);
+            this.conWrap.fillStyle = '#fff';
+            this.conWrap.font = '20px Arial';
+            this.conWrap.fillText('重玩', 45, 488);
+            this.conWrap.fillText('悔棋', 135, 488);
 
-            this._pieceEvent(); //绑定棋子落子事件
+
 
         },
         //绑定棋盘落子事件并计算棋子位置
@@ -119,13 +127,13 @@
                     //棋盘内落子
                     that._piece(x, y);
                 }
-                else if(x >= 1 && x <= 2 && y === 16 ){
+                else if (x >= 1 && x <= 2 && y === 16) {
                     //重新开始
                     that.clear();
                 }
-                else if(x >= 4 && x <= 5 && y === 16 ){
-                    //悔棋,需要重绘画布，未完成
-                    //that._undo();
+                else if (x >= 4 && x <= 5 && y === 16) {
+                    //悔棋
+                    that._undo();
                     console.log('悔棋事件')
                 }
             };
@@ -165,23 +173,30 @@
         },
         //悔棋
         _undo: function () {
-            if(this.piecesArray.length < 1){
+            if (this.piecesArray.length < 1) {
                 return
             }
+            //清除全部棋子数组的最后一个
             let coord = this.piecesArray.pop();
+            //清除黑、白棋子数组中的最后一个
+            if(this.pieceColor === 'white'){
+                this.blackPiecesArray.pop();
+                this.pieceColor = 'black';
+            }
+            else{
+                this.whitePiecesArray.pop();
+                this.pieceColor = 'white';
+            }
             let x = coord[0];
             let y = coord[1];
             //清除棋子
-            this.con.fillStyle = '#eee';
-            this.con.beginPath();
-            this.con.arc(x * 30, y * 30, 14, 0, 2 * Math.PI, false);
-            this.con.fill();
+            this.con.clearRect(x*30-15, y*30-15, 30, 30);
         },
         //胜负判定
         _victory: function () {
             //将黑、白棋子落子数据保存在新的数组里，不改变原始数据
-            let newWhitePiecesArray = this.whitePiecesArray.concat();
-            let newBlackPiecesArray = this.blackPiecesArray.concat();
+            let newWhitePiecesArray = this._deepCopy(this.whitePiecesArray.concat());
+            let newBlackPiecesArray = this._deepCopy(this.blackPiecesArray.concat());
             //棋子数量少于5个不进行胜负判断
             if (newWhitePiecesArray.length < 5) {
                 return
@@ -260,42 +275,41 @@
             return false
         },
         //斜着胜利/
-        _obliqueWin:function (arr) {
-            console.log(arr)
-            let newArr = arr.concat([]);
-            for (let i = 0; i < newArr.length; i++) {
-                newArr[i].push(newArr[i][0] + newArr[i][1])
+        _obliqueWin: function (arr) {
+            arr = this._deepCopy(arr);
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].push(arr[i][0] + arr[i][1])
             }
-            console.log(arr)
-            console.log(newArr)
-            return  this._arrEleSame(newArr);
+            return this._arrEleSame(arr);
 
         },
         //反斜着胜利\
         _reverseObliqueWin: function (arr) {
-            return
-            arr = arr.concat();
+            arr = this._deepCopy(arr);
             for (let i = 0; i < arr.length; i++) {
-                arr[i][0] = (14-arr[i][0]);
+                arr[i][0] = (14 - arr[i][0]);
                 arr[i].push(arr[i][0] + arr[i][1])
             }
-            console.log(arr)
             return this._arrEleSame(arr);
         },
         //斜着排列是否胜利
         _arrEleSame: function (result) {
-            result = result.concat();
-            result.sort(function (a,b) {
-                if(a[2] - b[2] > 0){
+            result = this._deepCopy(result);
+            result.sort(function (a, b) {
+                if (a[2] - b[2] > 0) {
                     return 1
                 }
-                else if(a[1] - b[1] > 0){
+                else if (a[2] === b[2] && a[1] - b[1] > 0) {
                     return 1
+                }
+                else{
+                    return -1
                 }
             });
             //如果相差4个的子元素的x值也相差4并且x+y的值相等就是五子连珠
-            for (let i = 0; i < result.length-4;i++) {
-                if(result[i][0]+4 === result[i+4][0] && result[i][2] === result[i+4][2]){
+            for (let i = 0; i < result.length - 4; i++) {
+                if (result[i][0] + 4 === result[i + 4][0] && result[i][2] === result[i + 4][2]) {
+
                     return true
                 }
             }
@@ -304,23 +318,23 @@
         //胜负判断
         _win: function (arr) {
             arr = arr.concat();
-            if(this._verticalWin(arr)){
+            if (this._verticalWin(arr)) {
                 console.log('竖排胜利');
                 return true
             }
-            else if(this._acrossWin(arr)){
+            else if (this._acrossWin(arr)) {
                 console.log('横排胜利');
                 return true
             }
-            else if(this._obliqueWin(arr)){
+            else if (this._obliqueWin(arr)) {
                 console.log('斜排胜利');
                 return true
             }
-            else if(this._reverseObliqueWin(arr)){
+            else if (this._reverseObliqueWin(arr)) {
                 console.log('反斜排胜利');
                 return true
             }
-            else{
+            else {
                 return false
             }
         },
@@ -336,8 +350,18 @@
             }
         },
         //id选择器
-        _$:function (id) {
+        _$: function (id) {
             return document.getElementById(id)
+        },
+        _deepCopy: function (obj) {
+            let out = [], i = 0, len = obj.length;
+            for (; i < len; i++) {
+                if (obj[i] instanceof Array) {
+                    out[i] = this._deepCopy(obj[i]);
+                }
+                else out[i] = obj[i];
+            }
+            return out;
         },
         //初始化数据,重新开始
         clear: function () {
@@ -349,16 +373,22 @@
             this.piecesArray = [];       //落下的所有棋子数据
             this.whitePiecesArray = [];  //白棋数据
             this.blackPiecesArray = [];  //黑棋数据
-            this._draw();
+            this.con.translate(40,40);
+            this._pieceEvent(); //绑定棋子落子事件
         },
         //初始化棋盘
         create: function () {
             //添加dom
-            this._$(this.id).innerHTML = '<canvas id="can" ></canvas> <div class="win" id="win"><span id="winText"></span> </div>';
+            this._$(this.id).innerHTML = '<canvas id="canWrap" ></canvas><canvas id="can" ></canvas> <div class="win" id="win"><span id="winText"></span> </div>';
 
             //获取canvas元素
             this.drawing = this._$('can');
+            this.drawing2 = this._$('canWrap');
             this.con = this.drawing.getContext('2d');
+            this.conWrap = this.drawing2.getContext('2d');
+            this.drawing2.width = 500;
+            this.drawing2.height = 560;
+            this._draw();
             this.clear();
         }
     };
