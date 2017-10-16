@@ -27,3 +27,6 @@
 ### 百度糯米前端技术学院
 * 正则表达式之入门
 * [正则表达式之简易markdown文件解析器](https://github.com/qwe3192359/ife/tree/master/markdown)
+
+### 其他
+* [五子棋](https://github.com/qwe3192359/ife/tree/master/gobang)
