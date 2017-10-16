@@ -18,6 +18,11 @@
             justify-content: center;
             align-items: center;
         }
+        .wrap .win span{
+            padding: 8px;
+            background: #ef6c00;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -40,7 +45,7 @@
         //绘制棋牌
         _draw: function () {
             this.con.fillStyle = '#f4d76f'; //棋盘背景色
-            this.con.fillRect(0, 0, 500, 500); //绘制棋盘背景
+            this.con.fillRect(0, 0, 500, 560); //绘制棋盘背景
 
             this.con.fillStyle = '#333';    //棋盘外层数字颜色及棋盘中心圆点颜色
             this.con.strokeStyle = '#000';    //外层边框宽度颜色
@@ -84,6 +89,15 @@
             this.con.arc(330, 330, 4, 0, 2 * Math.PI);
             this.con.fill();     //绘制棋盘黑点路径
 
+            //绘制功能区域
+            this.con.fillStyle = '#ef6c00';
+            this.con.fillRect(15, 465, 60, 30);
+            this.con.fillRect(105, 465, 60, 30);
+            this.con.fillStyle = '#fff';
+            this.con.font = '20px Arial';
+            this.con.fillText('重玩',45,488);
+            this.con.fillText('悔棋',135,488);
+
             this._pieceEvent(); //绑定棋子落子事件
 
         },
@@ -102,7 +116,17 @@
                 }
                 //只能在棋盘内落子
                 if (x >= 0 && x < 15 && y >= 0 && y < 15) {
+                    //棋盘内落子
                     that._piece(x, y);
+                }
+                else if(x >= 1 && x <= 2 && y === 16 ){
+                    //重新开始
+                    that.clear();
+                }
+                else if(x >= 4 && x <= 5 && y === 16 ){
+                    //悔棋,需要重绘画布，未完成
+                    //that._undo();
+                    console.log('悔棋事件')
                 }
             };
         },
@@ -138,6 +162,20 @@
             this.con.arc(x * 30, y * 30, 14, 0, 2 * Math.PI, false);
             this.con.fill();
             this._victory();    //胜负判断
+        },
+        //悔棋
+        _undo: function () {
+            if(this.piecesArray.length < 1){
+                return
+            }
+            let coord = this.piecesArray.pop();
+            let x = coord[0];
+            let y = coord[1];
+            //清除棋子
+            this.con.fillStyle = '#eee';
+            this.con.beginPath();
+            this.con.arc(x * 30, y * 30, 14, 0, 2 * Math.PI, false);
+            this.con.fill();
         },
         //胜负判定
         _victory: function () {
@@ -223,50 +261,63 @@
         },
         //斜着胜利/
         _obliqueWin:function (arr) {
-            arr = arr.concat();
-            for (let i = 0; i < arr.length; i++) {
-                arr[i] = arr[i][0] + arr[i][1]
+            console.log(arr)
+            let newArr = arr.concat([]);
+            for (let i = 0; i < newArr.length; i++) {
+                newArr[i].push(newArr[i][0] + newArr[i][1])
             }
-            return this._arrEleSame(arr);
+            console.log(arr)
+            console.log(newArr)
+            return  this._arrEleSame(newArr);
+
         },
         //反斜着胜利\
         _reverseObliqueWin: function (arr) {
+            return
             arr = arr.concat();
             for (let i = 0; i < arr.length; i++) {
-                arr[i] = 14-arr[i][0] + arr[i][1]
+                arr[i][0] = (14-arr[i][0]);
+                arr[i].push(arr[i][0] + arr[i][1])
             }
+            console.log(arr)
             return this._arrEleSame(arr);
         },
-        //找出数组中相同元素的个数,我五个以上即为胜利
+        //斜着排列是否胜利
         _arrEleSame: function (result) {
-
-            result.sort();
-            for (let i = 0; i < result.length;) {
-                let count = 0;
-                for (let j = i; j < result.length; j++) {
-                    if (result[i] === result[j]) {
-                        count++;
-                        if(count === 5){
-                            return true
-                        }
-                    }
+            result = result.concat();
+            result.sort(function (a,b) {
+                if(a[2] - b[2] > 0){
+                    return 1
                 }
-                i += count;
+                else if(a[1] - b[1] > 0){
+                    return 1
+                }
+            });
+            //如果相差4个的子元素的x值也相差4并且x+y的值相等就是五子连珠
+            for (let i = 0; i < result.length-4;i++) {
+                if(result[i][0]+4 === result[i+4][0] && result[i][2] === result[i+4][2]){
+                    return true
+                }
             }
             return false
         },
         //胜负判断
         _win: function (arr) {
+            arr = arr.concat();
             if(this._verticalWin(arr)){
+                console.log('竖排胜利');
                 return true
             }
             else if(this._acrossWin(arr)){
+                console.log('横排胜利');
                 return true
             }
             else if(this._obliqueWin(arr)){
+                console.log('斜排胜利');
                 return true
             }
             else if(this._reverseObliqueWin(arr)){
+                console.log('反斜排胜利');
                 return true
             }
             else{
@@ -278,7 +329,7 @@
             let that = this;
             let win = this._$('win');
             win.style.display = 'flex';
-            win.innerText = text;
+            this._$('winText').innerText = text;
             win.onclick = function () {
                 that.clear();
                 win.style.display = 'none';
@@ -288,11 +339,11 @@
         _$:function (id) {
             return document.getElementById(id)
         },
-        //初始化数据
+        //初始化数据,重新开始
         clear: function () {
             //重置画布
             this.drawing.width = 500;
-            this.drawing.height = 500;
+            this.drawing.height = 560;
             this.pieceColor = 'white';
             //清空保存的棋子数据
             this.piecesArray = [];       //落下的所有棋子数据
@@ -303,8 +354,8 @@
         //初始化棋盘
         create: function () {
             //添加dom
-            this._$(this.id).innerHTML = '<canvas id="can" ></canvas> <div class="win" id="win"> </div>';
-            
+            this._$(this.id).innerHTML = '<canvas id="can" ></canvas> <div class="win" id="win"><span id="winText"></span> </div>';
+
             //获取canvas元素
             this.drawing = this._$('can');
             this.con = this.drawing.getContext('2d');
